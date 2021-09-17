@@ -1,0 +1,27 @@
+<apex:page >
+    
+    <apex:includeScript value="{!$Resource.jQueryV331}"/>
+    <script>
+        function PopupWindow(url, title, params, w, h) {
+            var left = (screen.width/2)-(w/2);
+            var top = (screen.height/2)-(h/2);
+            return window.open(url, title, 
+            params+' width='+w+', height='+h+', top='+top+', left='+left);
+        }
+
+        var ProductId = "{!$CurrentPage.parameters.id}";
+
+        var url = "/apex/InventoryInformationPage?id="+ProductId;
+        var title = 'Salesforce';
+        let params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,';
+        var w = 700;
+        var h = 400;
+
+        window.resizeTo(w, h);
+
+        //PopupWindow(url, title, params, w, h);
+
+        //window.close();
+    
+    </script>
+</apex:page>

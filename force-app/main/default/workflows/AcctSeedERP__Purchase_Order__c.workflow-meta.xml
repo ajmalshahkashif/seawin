@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldUpdates>
+        <fullName>In_Transit_Message_Show</fullName>
+        <field>In_Transit_Message_Show__c</field>
+        <literalValue>1</literalValue>
+        <name>In Transit Message Show</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>In_Transit_Shipped_Date</fullName>
+        <field>Shipped_Date__c</field>
+        <formula>TODAY()</formula>
+        <name>In Transit Shipped Date</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>PO_On_Stage_Received</fullName>
+        <description>When the stage is changed to received or partially received then set initial Receive Date to Today&apos;s Date</description>
+        <field>AcctSeedERP__Initial_Receive_Date__c</field>
+        <formula>TODAY()</formula>
+        <name>PO_On_Stage_Received</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Received_Date_on_PO</fullName>
+        <description>Set the received date to today date.</description>
+        <field>Received_Date__c</field>
+        <formula>TODAY()</formula>
+        <name>Update Received Date on PO</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Stage_Helper_PO</fullName>
+        <field>Stage_Helper__c</field>
+        <formula>TEXT(PRIORVALUE(Stage__c))</formula>
+        <name>Update Stage Helper PO</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Status_Helper_PO</fullName>
+        <field>Status_Helper__c</field>
+        <formula>TEXT(PRIORVALUE(AcctSeedERP__Status__c))</formula>
+        <name>Update Status Helper PO</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>In Transit Message Show</fullName>
+        <actions>
+            <name>In_Transit_Message_Show</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>AND(NOT(ISNEW()), ISCHANGED(Stage__c), TEXT(PRIORVALUE(Stage__c)) != &apos;In Transit&apos;, TEXT(Stage__c) = &apos;In Transit&apos;)</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>In Transit Shipped Date</fullName>
+        <actions>
+            <name>In_Transit_Shipped_Date</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>AND(NOT(ISNEW()), ISCHANGED(Stage__c), TEXT(PRIORVALUE(Stage__c)) != &apos;In Transit&apos;, TEXT(Stage__c) = &apos;In Transit&apos;, ISBLANK(Shipped_Date__c))</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>PO_On_Stage_Received</fullName>
+        <actions>
+            <name>PO_On_Stage_Received</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>When the stage is changed to received or partially received then set initial Receive Date to Today&apos;s Date</description>
+        <formula>IF(ISCHANGED(Stage__c) &amp;&amp; (ISPICKVAL(Stage__c, &apos;Received&apos;) || ISPICKVAL(Stage__c, &apos;Partially Received&apos;) &amp;&amp; ISBLANK(TEXT(Stage__c))), True, False)</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>PO_Statge_Change</fullName>
+        <actions>
+            <name>Update_Stage_Helper_PO</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>When Stage is changed to In Transit</description>
+        <formula>ISCHANGED(Stage__c)</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>PO_Status_Change</fullName>
+        <actions>
+            <name>Update_Status_Helper_PO</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>ISCHANGED(AcctSeedERP__Status__c)</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+</Workflow>

@@ -1,0 +1,14 @@
+<apex:page standardController="AcctSeedERP__Sales_Order__c">
+
+    <apex:stylesheet value="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+    <apex:includeScript value="//code.jquery.com/jquery-1.10.2.js" />
+    <apex:includeScript value="//code.jquery.com/ui/1.11.2/jquery-ui.js" />
+
+    <apex:enhancedList type="AcctSeedERP__Sales_Order__c" height="300" 
+        rowsPerPage="10" id="SalesOrderList" customizable="False"/>
+
+    <!--<apex:form >
+        <apex:sectionHeader title="Sales Order" subtitle="Home"/>
+    </apex:form>-->
+
+</apex:page>

@@ -1,0 +1,17 @@
+<apex:page >
+  <style>
+      body {
+          margin: 0 !important;
+      }
+  </style>
+  <apex:pageblock title="Reports">
+      <apex:outputLink rendered="{!$Profile.Name == 'System Administrator'}" value="{!IF(Contains($Api.Partner_Server_URL_360, 'partial'), 
+      '/00O59000000O9dk', '/00O1I000006aFOc')}" target="_blank">Unpaid Sales Order Commissions with Fully Paid Sales Orders
+    </apex:outputLink>
+    <apex:outputLink rendered="{!Contains($Profile.Name, 'Inside Sales')}" value="{!IF(Contains($Api.Partner_Server_URL_360, 
+        'partial'), 
+      '/00O59000000O9lT?pv0='&LEFT($User.Id, 15)&'&pv2='&LEFT($User.Id, 15), 
+      '/00O59000000O9lT?pv0='&LEFT($User.Id, 15)&'&pv2='&LEFT($User.Id, 15))}" target="_blank">Commissions Due
+    </apex:outputLink>
+  </apex:pageblock>
+</apex:page>

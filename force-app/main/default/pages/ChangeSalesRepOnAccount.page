@@ -1,0 +1,43 @@
+<apex:page standardController="Sales_Rep__c" extensions="ChangeSalesRepExtension">
+
+    <apex:form id="form_id">
+        <apex:pageBlock title="Please assign Sales Rep and Owner" id="page_block_id">
+            
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveAccount}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection columns="1" collapsible="false">
+                <apex:pageBlockTable value="{!AccountList}" var="acc">
+                    
+                    <apex:column headerValue="Account Name">
+                        <apex:outputLink target="_blank" value="/{!acc.id}">{!acc.Name}</apex:outputLink>
+                    </apex:column>
+                    
+                    <apex:column headerValue="Sales Rep/Team">
+                        <apex:inputField value="{!acc.Sales_Rep_O__c}">
+                            <apex:actionSupport event="onchange" action="{!setOptionValues}" reRender="page_block_id">
+                            </apex:actionSupport>
+                        </apex:inputField>
+                    </apex:column>
+
+                    <apex:column headerValue="Owner">
+                        <apex:selectList id="owner_select_id" value="{!selected}" size="10" style="width:200px">
+                            <apex:selectOptions value="{!AllOptionValues}">
+                            </apex:selectOptions>
+                        </apex:selectList> 
+                    </apex:column>
+
+                    <apex:pageBlockSectionItem rendered="{!OwnerMissing}">
+                            <apex:outputLabel style="color: red;">Error:</apex:outputLabel>
+                            <apex:outputText style="color: red !important;" value="Please select the Owner."></apex:outputText> 
+                    </apex:pageBlockSectionItem>
+
+                </apex:pageBlockTable>
+
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

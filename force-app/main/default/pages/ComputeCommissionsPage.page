@@ -1,0 +1,12 @@
+<apex:page controller="ComputeCommissionsController" action="{!FromPage}">
+    <apex:form Id="form" >
+        <apex:pageBlock rendered="{!AlreadyPaid}">
+            <apex:pageBlockButtons location="both">
+                <apex:commandbutton action="{!Back}" oncomplete="window.location.href = '/{!soId}'" rerender="form" value="Back"/>
+            </apex:pageBlockButtons>
+            <apex:pageMessage severity="error" escape="false" detail="Commissions cannot be created or recalculated. 
+                                                                      The commissions on this sales order are already paid." 
+                              strength="2" rendered="{!AlreadyPaid}"></apex:pageMessage>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

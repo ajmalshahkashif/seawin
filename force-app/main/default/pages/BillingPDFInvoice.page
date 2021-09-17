@@ -1,0 +1,661 @@
+<apex:page standardcontroller="AcctSeed__Billing__c" extensions="BillingPDFExtension" applyBodyTag="false" renderAs="pdf">
+    <head>
+        <style type="text/css" media="print">
+            @page:first {
+            @top-right {
+            content: element(headerFirst);
+            }
+            @bottom-left {
+            content: element(footer);
+            }
+            margin-top:150px;
+            }
+            @page {
+            @top-right {
+            content: element(header);
+            }
+            @bottom-left {
+            content: element(footer);
+            }
+            }
+            div.headerFirst {
+            position: running(headerFirst);
+            }
+            div.header {
+            position: running(header);
+            
+            }
+            div.content {
+            position: relative;
+            }
+            div.footer {
+            display: block;
+            padding: 5px;
+            position: running(footer);
+            }
+            .pagenumber:before {
+            content: counter(page);
+            }
+            .pagecount:before {
+            content: counter(pages);
+            }
+            body {
+            font-family: "Arial""Sans-Serif";
+            font-size: 11px !important;
+            }
+            
+            /* table css */
+            table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            }
+            
+            #itemstable {
+                table-layout: normal;
+            }
+            
+            .table-header {
+            background-color: #726D6C;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            color: white !important;
+            }
+            
+            .no-border{
+                border: none !important;
+            }
+            
+            #itemstable td, th {
+            border-right: 1px solid black;
+            text-align: left;
+            padding: 4px;
+            }
+            .last-col{
+            border-right: none !important;
+            }
+            
+            #itemstable tr:nth-child(even) {
+            background-color: #dddddd;
+            }
+            .header-font{
+            font-weight: normal;    
+            }
+            
+            /* Terms and Conditions css */
+
+            .font-family-class{
+            
+            font-family: "Times New Roman", Times, serif;
+            }
+            .font-family-class-terms{
+            
+            font-family: Arial, Helvetica, sans-serif;
+            }
+            .para-class-margin{
+                margin-top: -11px; color: #404040;
+            }
+            .para-class{
+                color: #404040;
+            }
+            .heading-body{
+            
+                font-weight: bold; color: #4D4744;
+            }
+            
+            /* top detail css */
+            .padding-td{
+                padding-bottom:7px;
+            }
+            .extra-padding-td{
+                padding-bottom:30px;
+            }
+            .top-detail-col-width{
+                
+                width: 70%;
+            
+            }
+            .break-word{
+                word-wrap: break-word;
+            }
+            .td-width{
+                width: 104px !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="headerFirst" style="margin-top: 70px;">
+            <table style="width:100%">
+                <tr>
+                    <td style="vertical-align:top;">
+                        <apex:image url="{!URLFOR($Resource.SeawinImages,
+                                         'Header/Billing/Factory.jpg')}" width="717" height="50" rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin Factory'}"/>
+                        <apex:image url="{!URLFOR($Resource.SeawinImages,
+                                         'Header/Billing/Hospitality.jpg')}" width="717" height="70" rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin Hospitality'}"/>
+                    
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="footer">
+            <apex:image url="{!URLFOR($Resource.SeawinImages,
+                                         'Footer/Factory.png')}" width="717" height="30" rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin Factory'}"/>
+            <apex:image url="{!URLFOR($Resource.SeawinImages,
+                                         'Footer/Hospitality.png')}" width="717" height="30" rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin Hospitality'}"/>
+        
+        </div>
+        <div class="content">
+            <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+                <tr>
+                    <td style="width:50%;vertical-align:top">
+                        <table style="width:100%;">
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.name),'display: none;','')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Contact Name:" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.name)}"/>
+                                </td>
+                                <td style="color: #404040 !important" class="padding-td top-detail-col-width">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.name}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.name)}"/>
+                                    
+                                </td>
+                            </tr>
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.AcctSeed__Customer__r.name),'display: none;','')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Bill To Name:"/>
+                                </td>
+                                <td style="color: #404040 !important" class="padding-td top-detail-col-width">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Customer__r.name}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Customer__r.name)}"/>
+                                    <apex:outputText value="<br/>" escape="false" rendered="{!ISBLANK(AcctSeed__Billing__c.AcctSeed__Customer__r.name)}" />
+                                    
+                                </td>
+                            </tr>
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Phone),'display: none;','')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Phone:" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Phone)}"/> 
+                                </td>
+                                <td style="color: #404040 !important" class="padding-td top-detail-col-width">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Phone}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Phone)}"/>
+                                    <apex:outputText value="<br/>" escape="false" rendered="{!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Phone)}" />
+                                    
+                                </td>
+                            </tr>
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Email),'display: none;','')}">
+                                <td class="extra-padding-td td-width">
+                                    <apex:outputText value="Email:" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Email)}"/>
+                                </td>
+                                <td style="color: #404040 !important" class="extra-padding-td top-detail-col-width">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Email}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Email)}"/>
+                                    <apex:outputText value="<br/>" escape="false" rendered="{!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Contact__r.Email)}" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="width:50%;vertical-align:top">
+                        <table style="width:100%;">
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.Name),'display: none;','')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Billing Number:" style="font-weight: bold"/>
+                                </td>
+                                <td style="color: #404040 !important; font-weight: bold;" class="padding-td">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.Name}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.Name)}"/>
+                                    
+                                </td>
+                            </tr>
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.Payment_Terms__c),'display: none;','')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Payment Terms:"/>
+                                </td>
+                                <td style="color: #404040 !important" class="padding-td">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.Payment_Terms__c}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.Payment_Terms__c)}"/>
+                                    
+                                </td>
+                            </tr>
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.AcctSeed__Opportunity__r.name),'display: none;','')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Project:"/>
+                                </td>
+                                <td style="color: #404040 !important" class="padding-td">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Opportunity__r.name}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Opportunity__r.name)}"/>
+                                    
+                                </td>
+                            </tr>
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.AcctSeed__Date__c),'display: none;','')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Billing Date:"/>
+                                </td>
+                                <td style="color: #404040 !important" class="padding-td">
+                                    <apex:outputText value="{0,date,M/d/yyyy}">
+                                        <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Date__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.AcctSeed__Due_Date2__c),'display: none;','')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Due Date:"/>
+                                </td>
+                                <td style="color: #404040 !important" class="padding-td">
+                                    <apex:outputText value="{0,date,M/d/yyyy}">
+                                        <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Due_Date2__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                            <!--<tr style="vertical-align:top; {!IF(AcctSeed__Billing__c.Bill_Type__c == 'Amount','display: none;','')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Billing Type:"/>
+                                </td>
+                                <td style="color: #404040 !important" class="padding-td">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.Bill_Type__c}">
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                            <tr style="vertical-align:top; {!IF(firstbilling,'','display: none;')}">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Deposit %"/>
+                                </td>
+                                <td style="color: #404040 !important" class="padding-td">
+                                    <apex:outputText value="{!deposit}%">
+                                    </apex:outputText>
+                                </td>
+                            </tr>-->
+                            <tr style="vertical-align:top; {!IF(ISBLANK(AcctSeed__Billing__c.AcctSeedERP__Sales_Order__r.Sales_Rep_O__c),'display: none;','')}">
+                                <td class="extra-padding-td td-width">
+                                    <apex:outputText value="Sales Rep:"/>
+                                </td>
+                                <td style="color: #404040 !important" class="extra-padding-td">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeedERP__Sales_Order__r.Sales_Rep_O__r.name}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeedERP__Sales_Order__r.Sales_Rep_O__c)}"/>
+                                    
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="width:50%;vertical-align:top">
+                        <table style="width:100%;">
+                            <tr style="vertical-align:top">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Bill To:" />
+                                </td>                              
+                                <td style="color: #404040 !important" class="padding-td">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Customer__r.Name}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Customer__r.Name)}"/>
+                                    <apex:outputText value=",&nbsp;<br/>" escape="false" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Customer__r.Name)}" />
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Billing_Street__c}" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Street__c)}" />
+                                    <apex:outputText value=",&nbsp;<br/>" escape="false" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Street__c)}" />
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Billing_City__c}" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_City__c)}" />
+                                    <apex:outputText value=",&nbsp;" escape="false" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_City__c)}" />
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Billing_Country__c}" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Country__c)}" />&nbsp;
+                                    <apex:outputText value="&nbsp;<br/>" escape="false" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_Country__c)}" />
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Billing_PostalCode__c}" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Billing_PostalCode__c)}" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="width:50%;vertical-align:top">
+                        <table style="width:100%;">
+                            <tr style="vertical-align:top">
+                                <td class="padding-td td-width">
+                                    <apex:outputText value="Ship To:" />
+                                </td>                              
+                                <td style="color: #404040 !important" class="padding-td">
+                                    <apex:outputText value="{!AcctSeed__Billing__c.Shipping_Account__r.Name}"
+                                                     rendered="{!!ISBLANK(AcctSeed__Billing__c.Shipping_Account__r.Name)}"/>
+                                    <apex:outputText value=",&nbsp;<br/>" escape="false" rendered="{!!ISBLANK(AcctSeed__Billing__c.Shipping_Account__r.Name)}" />
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Shipping_Street__c}" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Shipping_Street__c)}" />
+                                    <apex:outputText value=",&nbsp;<br/>" escape="false" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Shipping_Street__c)}" />
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Shipping_City__c}" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Shipping_City__c)}" />
+                                    <apex:outputText value=",&nbsp;" escape="false" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Shipping_City__c)}" />
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Shipping_Country__c}" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Shipping_Country__c)}" />&nbsp;
+                                    <apex:outputText value="&nbsp;<br/>" escape="false" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Shipping_Country__c)}" />
+                                    <apex:outputText value="{!AcctSeed__Billing__c.AcctSeed__Shipping_PostalCode__c}" rendered="{!!ISBLANK(AcctSeed__Billing__c.AcctSeed__Shipping_PostalCode__c)}" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+                
+            </table>
+            <table id="itemstable" style="width:100%;">
+                <tr>
+                    <th class="header-font table-header no-border" style="width: 24%;">Product Image</th>
+                    <th class="header-font table-header no-border" style="width: 12%;">Product Code</th>
+                    <th class="header-font table-header no-border" style="width: 34%;">Item Description</th>
+                    <th class="header-font table-header no-border" style="width: 9%;">Size</th>
+                    <th class="header-font table-header no-border" style="width: 4%;">QT</th>
+                    <th class="header-font table-header no-border" style="width: 8%;">Unit Price</th>
+                    <th class="last-col header-font table-header no-border" style="width: 9%;">Total Price</th>
+                </tr>
+                <apex:variable var="trcolor" value=""/>
+                <apex:repeat value="{!billingLines}" var="item">
+                    <tr style="background-color: {!trcolor}">
+                        <td style="width: 24%;">
+                            <apex:outputPanel rendered="{!!ISBLANK(item.AcctSeed__Product__r.ProductImageURL__c)}">
+                            <img src="{!item.AcctSeed__Product__r.ProductImageURL__c}" 
+                                                     alt="{!item.AcctSeed__Product__r.name}" width="100%"/>
+                            </apex:outputPanel>
+                        </td>
+                        <td style="width: 12%;">
+                            <apex:outputText value="{!item.acctSeed__Product__r.ProductCode}" style="width: 100%;"/>
+                        </td>
+                        <td style="width: 34%;">
+                        <apex:outputField value="{!item.Item_Description__c}" style="width: 100%;"/>
+                        </td>
+                        <td style="width: 9%;">
+                        <apex:outputField value="{!item.Size__c}" style="width: 100%;"/>
+                        </td>
+                        <td style="width: 4%;">
+                        <apex:outputField value="{!item.Quantity__c}" style="width: 100%;"/>
+                        </td>
+                        <td style="width: 8%;">
+                            <apex:outputField value="{!item.Unit_Cost__c}" style="width: 100%;"/>
+                        </td>
+                        <td class="last-col" style="width: 9%;">
+                            <apex:outputField value="{!item.Total_Price__c}" style="width: 100%;"/>
+                        </td>
+                        <apex:variable var="trcolor" value="{!IF(trcolor == '', '#dddddd', '')}"/>
+                    </tr>
+                </apex:repeat>
+            </table>
+            <br/>
+            <div style="height: 78px; width: 100%; margin-bottom: 50px;">
+                <table style="width:300px;border-collapse:collapse;float:right">
+                    <tr class="tableRowAmount">
+                        <td style="padding:6px">
+                            <span style="">
+                                <apex:outputText value="Grand Total:"/>
+                            </span>
+                        </td>
+                        <td style="text-align:right;padding:6px">
+                            <span style="">
+                                <apex:outputField value="{!AcctSeed__Billing__c.AcctSeed__Total__c}" />
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="tableRowAmount">
+                        <td style="padding:6px">
+                            <span style="">
+                                <apex:outputText value="Paid:"/>
+                            </span>
+                        </td>
+                        <td style="text-align:right;padding:6px">
+                            <span style="">
+                                <apex:outputField value="{!AcctSeed__Billing__c.AcctSeed__Received_Amount__c}" />
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="tableRowAmount">
+                        <td style="padding:6px">
+                            <span style="">
+                                <apex:outputText value="Amount Due:"/>
+                            </span>
+                        </td>
+                        <td style="text-align:right;padding:6px">
+                            <span style="">
+                                <!-- <apex:outputField value="{!AcctSeed__Billing__c.AcctSeed__Balance__c}" /> -->
+                                <!--<apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Total__c - AcctSeed__Billing__c.AcctSeed__Balance__c}" />
+                                </apex:outputText>-->
+                                <apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!AcctSeed__Billing__c.AcctSeed__Total__c - AcctSeed__Billing__c.AcctSeed__Received_Amount__c}" />
+                                </apex:outputText>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- Terms and Conditions for Seawin Factory -->
+            <apex:outputPanel rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin Factory'}">
+                <div class="font-family-class-terms" style="vertical-align: bottom;">
+                    <div class="heading" style="width: 100%; text-align:center;">
+                        <p class="heading-body"><u>
+                            Terms &amp; Conditions
+                            </u>
+                        </p>
+                    </div>
+                    <div class="heading-body-tag">
+                        <p class="heading-body">
+                            Policy for Sales Order Submissions
+                        </p>
+                        <p class="para-class-margin">
+                            All orders to Seawin must be submitted with a purchase order.<br/>         
+                            Seawin Hospitality quotes might include shipping cost. The shipping cost is estimated for 
+                            reference only. Prior the shipment once the order is ready for shipping this purchase order will be 
+                            updated with current shipping cost. Clients are free to utilize their own preferred carrier, this 
+                            must be noted on this purchase order.
+                        </p>
+                        <p class="heading-body">
+                            Quote Expiration
+                        </p>
+                        <p class="para-class-margin">
+                            Quotes are valid for 90 days from quote date. Quote prices might be changed without notice.
+                        </p>
+                        <p class="heading-body">
+                            Order Confirmation
+                        </p>
+                        <p class="para-class-margin">
+                            To confirm orders, it must be signed and returned in timely matter. If order is not signed it is not 
+                            considered to be confirmed. In addition to order signature Seawin might request customers to
+                            confirm and sign purchase order drawings. Order is not considered confirmed if signature for 
+                            order drawings was requested.
+                        </p>
+                        <p class="heading-body">
+                            Deposit and Payments
+                        </p>
+                        <p class="para-class-margin">
+                            Orders are shipped directly from our factories. Please allow up to 5 weeks for production. 
+                            Depending onthe delivery to locations orders shipped from our factory might require up to 7 
+                            weeks for delivery.
+                        </p>
+                        <p class="heading-body">
+                            Production and Shipping
+                        </p>
+                        <p class="para-class-margin">
+                            Orders are shipped directly from our factories or warehouse. Customers will be notified if orders 
+                            are not in stock in our warehouse. If orders are shipped from our factory, please allow up to 5
+                            weeks for production. For delivery please allow up to 2 weeks for orders shipped from our 
+                            warehouse. Depending on the delivery to locations orders shipped from our factory might require 
+                            up to 8 weeks for delivery.
+                        </p>
+                        <p class="heading-body">
+                            Delivery
+                        </p>
+                        <p class="para-class-margin">
+                            All Seawin shipments are large truck shipments delivered via Truckload, LTL or Containers. All 
+                            deliveries must be made to a loading dock or client must have appropriate machinery needed to
+                            unload materials. Forlocations without a loading dock, a pallet jack and a forklift might be
+                            necessary to unload the pallets. Ifproper unloading facility is not available client will be
+                            responsible for all charges incurred due to but, notlimited to, additional freight handling, 
+                            re-delivery, and storage fees. In addition, client will be responsiblefor any additional charges 
+                            incurred during delivery but, not limited to, demurrage, detention, storage fees,and detention.
+                            
+                        </p>
+                        <p class="para-class">
+                            The National Claims Counsel Regulations specify that consignee must inspect, examine and 
+                            inventoryshipment as it is unloaded. Shipment must be inspected at arrival immediately for 
+                            obvious signs of damage.Any and all shortages and damages must be written in Bill of Lading (BOL). 
+                            If any items determined to bedamaged or missing, consignee must note the item, the discrepancy 
+                            and the condition before signing, andthen call Seawin to report any problems. All cartons should 
+                            be open for inspection. If there is a slight doubtthat the merchandise is damaged (concealed or not) 
+                            it must be loaded on the BOL. If a notation is notmade, the liability to prove that the carrier 
+                            made damage becomes consignee's responsibility.
+                        </p>
+                        <p class="heading-body">
+                            Refunds, Returns and Cancellations
+                        </p>
+                        <div class="para-class-margin">
+                            Upon receipt of a signed contract orders are not eligible for refund, return, exchange orcancellation.
+                        </div>
+                    </div>
+                    <div class="heading" style="width: 100%; text-align:center;">
+                        <p class="heading-body"><u>
+                            Payment
+                            </u>
+                        </p>
+                    </div>
+                    <div class="heading-body-tag">
+                        <p class="heading-body">
+                            Hong Kong Wire Transfer Payment
+                        </p>
+                        <div class="para-class-margin">
+                            Bank: HSBC Hong Kong Des Voeux Road Central Branch<br/>
+                            Account Name: SeaWin Limited<br/>
+                            Account Number: 652-338252-838<br/>
+                            Swift Code: HSBCHKHHHKH<br/><br/>
+                            Wire transfer must reference Purchase Order Number and Invoice Number.<br/>
+                        </div>
+                    </div>
+                </div>            
+            </apex:outputPanel>
+            <!-- Terms and Conditions for Seawin Hospitality -->
+            <apex:outputPanel rendered="{!AcctSeed__Billing__c.GL_Account_Variable_1__c == 'Seawin Hospitality'}">
+                <div class="font-family-class-terms" style="vertical-align: bottom;">
+                    <div class="heading" style="width: 100%; text-align:center;">
+                        <p class="heading-body"><u>
+                            Terms &amp; Conditions
+                            </u>
+                        </p>
+                    </div>
+                    <div class="heading-body-tag">
+                        <p class="heading-body">
+                            Policy for Sales Order Submissions
+                        </p>
+                        <p class="para-class-margin">
+                            All orders to Seawin Hospitality must be submitted with a purchase order.<br/>         
+                            Seawin Hospitality quotes might include shipping cost. The shipping cost is 
+                            estimated for reference only. Prior the shipment once the order is ready for 
+                            shipping this purchase order will be updated with current shipping cost. Clients
+                            are free to utilize their own preferred carrier, this must be noted on this
+                            purchase order.
+
+                        </p>
+                        <p class="heading-body">
+                            Quote Expiration
+                        </p>
+                        <p class="para-class-margin">
+                            Quotes are valid for 180 days from quote date. Quote prices might be changed without notice.
+                        </p>
+                        <p class="heading-body">
+                            Sales Taxes
+                        </p>
+                        <p class="para-class-margin">
+                            If orders are shipped from outside of the US and to other states than New Jersey, Seawin Hospitality is not responsible for collecting local sales taxes. Customer is responsible for any sales taxes to be collected.
+
+                        </p>
+                        <p class="heading-body">
+                            Tariffs
+                        </p>
+                        <p class="para-class-margin">
+                            In the event, if tariffs for ordered product are changed at any point from when the order was placed to delivered, Seawin Hospitality has a right
+to collect the difference from old to new tariffs. If customer want to cancel the order see our Cancellation Policies. 
+
+                        </p>
+                        <p class="heading-body">
+                            Order Confirmation
+                        </p>
+                        <p class="para-class-margin">
+                            To confirm orders, it must be signed and returned in timely matter. If order is not signed it 
+                            is not considered to be confirmed. In addition to order signature Seawin Hospitality might
+                            request customers to confirm and sign purchase order drawings. Order is not considered confirmed 
+                            if signature for order drawings was requested.
+                        </p>
+                        <p class="heading-body">
+                            Deposit and Payments
+                        </p>
+                        <p class="para-class-margin">
+                            Orders are subject to the following payment schedule:<br/> 
+                            50% advance deposit. This deposit will remain as a credit on the account until the final payment for the order is complete.<br/> 
+                            50% balance payment NET 15 after shipment received. In the event customer requires special payment arrangement must be notified before order confirmation.
+                        </p>
+                        <p class="heading-body">
+                            Production and Shipping
+                        </p>
+                        <p class="para-class-margin">
+                            All orders are shipped directly from our factories. Please allow up to 5 weeks for production. Depending on the delivery to location might
+require up to 7 weeks for delivery.
+                        </p>
+                        <p class="heading-body">
+                            Delivery
+                        </p>
+                        <p class="para-class-margin">
+                            All Seawin Hospitality shipments are large truck shipments delivered via Truckload, LTL or 
+                            Containers. All deliveries must be made to a loading dock or client must have appropriate machinery 
+                            needed to unload materials. For locations without a loading dock, a pallet jack and a forklift 
+                            might be necessary to unload the pallets. If proper unloading facility is not available client 
+                            will be responsible for all charges incurred due to but, not limited to, additional freight
+                            handling, re-delivery, and storage fees. In addition client will be responsible for any additional
+                            charges incurred during delivery but, not limited to, demurrage, detention, storage fees, and 
+                            detention.
+                            
+                        </p>
+                        <p class="para-class">
+                            The National Claims Counsel Regulations specify that consignee must inspect, examine and inventory 
+                            shipment as it is unloaded. Shipment must be inspected at arrival immediately for obvious signs of
+                            damage. Any and all shortages and damages must be written in Bill of Lading (BOL). If any items 
+                            determined to be damaged or missing, consignee must note the item, the discrepancy and the 
+                            condition before signing, and then call Seawin Hospitality to report any problems. All cartons 
+                            should be open for inspection. If there is a slight doubt that the merchandise is damaged 
+                            (concealed or not) it must be loaded on the BOL. If a notation is not made, the liability to
+                            prove that the carrier made damage becomes consignee's responsibility.
+                        </p>
+                        <p class="heading-body">
+                            Refunds, Returns and Cancellations
+                        </p>
+                        <div class="para-class-margin">
+                            Upon receipt of a signed contract orders are not eligible for refund, return, exchange or cancellation.
+                        </div>
+                    </div>
+                    <div class="heading" style="width: 100%; text-align:center;">
+                        <p class="heading-body"><u>
+                            Payment
+                            </u>
+                        </p>
+                    </div>
+                    <div class="heading-body-tag">
+                        <p class="heading-body">
+                            US Wire Transfer Payment
+                        </p>
+                        <div class="para-class-margin">
+                            Bank: JPMorgan Chase<br/>
+                            Account Name: Seawin Global LLC<br/>
+                            Account Number: 337611609<br/>
+                            Routing Number: 021000021<br/>
+                            Wire transfer must reference Purchase Order Number and Invoice Number.
+
+                        </div>
+                        <p class="heading-body">
+                            Check
+                        </p>
+                        <p class="para-class-margin">
+                            Certified checks are treated as guaranteed funds. Allow 24 hours for processing.<br/>
+                            Please note that orders paid by company's check will require up to 12 days for check to 
+                            be cleared. Orders will be processed or delivered only after company's check is cleared.
+                            Checks must reference Purchase Order Number and Invoice Number.<br/>
+                        </p>
+                        <p class="para-class">
+                            All checks must be mailed and payable to:<br/>
+                            Seawin Global LLC<br/>
+                            100 Ryan Street Suite 25,<br/>
+                            South Plainfield, NJ 07080
+                            <br/>
+                        </p>
+                        <p class="heading-body">
+                            Credit Card Payments
+                        </p>
+                        <div class="para-class-margin">
+                            Check if accepted at the time of the sale. Processing fee might apply.
+                        </div>
+                    </div>
+                </div>            
+            </apex:outputPanel>
+        </div>
+    </body>
+</apex:page>
